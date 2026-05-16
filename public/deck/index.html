@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fly91 — The Passenger Confidence System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FAF5EC;
+  --bg-warm: #F4EBDB;
+  --bg-deep: #0E332C;
+  --bg-ink: #121212;
+  --ink: #121212;
+  --ink-muted: #4A4A42;
+  --ink-soft: #7A7568;
+  --teal: #13473D;
+  --teal-deep: #0E332C;
+  --amber: #D7722C;
+  --amber-soft: #E8A878;
+  --red-soft: #B85650;
+  --line: rgba(18, 18, 18, 0.12);
+  --line-soft: rgba(18, 18, 18, 0.06);
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7vh 7vw;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.slide-num {
+  position: absolute;
+  top: 3.5vh;
+  left: 7vw;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.slide-logo {
+  position: absolute;
+  top: 3.5vh;
+  right: 7vw;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--teal);
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.slide-logo sup {
+  font-size: 10px;
+  color: var(--amber);
+  font-family: var(--sans);
+  letter-spacing: 0.08em;
+  position: relative;
+  top: -9px;
+}
+
+.slide.dark .slide-num,
+.slide.dark .slide-logo { color: rgba(250, 245, 236, 0.6); }
+.slide.dark .slide-logo { color: var(--amber-soft); }
+
+/* ============= SLIDE 1 — COVER ============= */
+
+.slide-cover {
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-cover::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 80vw;
+  height: 80vw;
+  max-width: 900px;
+  max-height: 900px;
+  background: radial-gradient(circle at 50% 50%, rgba(215, 114, 44, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cover-inner {
+  max-width: 1000px;
+  position: relative;
+  z-index: 1;
+}
+
+.cover-eyebrow {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cover-eyebrow::before {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: var(--amber);
+}
+
+.cover-inner h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(48px, 8vw, 120px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin-bottom: 36px;
+}
+
+.cover-inner h1 em {
+  font-style: italic;
+  color: var(--teal);
+  font-weight: 400;
+}
+
+.cover-sub {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.2vw, 30px);
+  line-height: 1.4;
+  color: var(--ink-muted);
+  max-width: 36ch;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin-bottom: 48px;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 36px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line-soft);
+  flex-wrap: wrap;
+}
+
+/* ============= SLIDE 2 — THE HOOK ============= */
+
+.slide-hook {
+  background: var(--bg-ink);
+  color: var(--bg);
+  padding: 7vh 7vw;
+}
+
+.hook-eyebrow {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--amber-soft);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hook-eyebrow::before {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: var(--amber-soft);
+}
+
+.hook-date {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  color: var(--amber-soft);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.slide-hook h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(42px, 6vw, 88px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 20ch;
+  margin-bottom: 40px;
+  color: var(--bg);
+}
+
+.slide-hook h2 em {
+  font-style: italic;
+  color: var(--amber-soft);
+}
+
+.hook-numbers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  max-width: 900px;
+  margin-top: auto;
+  padding-top: 40px;
+  border-top: 1px solid rgba(250, 245, 236, 0.15);
+}
+
+.hook-num {
+  padding-right: 24px;
+  border-right: 1px solid rgba(250, 245, 236, 0.1);
+}
+
+.hook-num:last-child { border-right: none; }
+
+.hook-num .n {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--amber-soft);
+  line-height: 1;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.hook-num .l {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(250, 245, 236, 0.65);
+  font-weight: 500;
+}
+
+/* ============= SLIDE 3 — DIAGNOSIS ============= */
+
+.slide-diag {
+  background: var(--bg-warm);
+}
+
+.diag-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+  align-items: center;
+  max-width: 1200px;
+}
+
+.diag-quote {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.4vw, 32px);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-style: italic;
+  padding: 28px 32px;
+  border-left: 3px solid var(--red-soft);
+  background: rgba(184, 86, 80, 0.06);
+  border-radius: 0 16px 16px 0;
+  margin-bottom: 24px;
+}
+
+.diag-quote .attrib {
+  display: block;
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.diag-right-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.slide-diag h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+.slide-diag h2 em {
+  font-style: italic;
+  color: var(--teal);
+}
+
+.slide-diag p {
+  font-size: clamp(16px, 1.4vw, 19px);
+  color: var(--ink-muted);
+  line-height: 1.55;
+  max-width: 42ch;
+}
+
+@media (max-width: 900px) {
+  .diag-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* ============= SLIDE 4 — THE SHIFT ============= */
+
+.slide-shift {
+  background: var(--bg);
+}
+
+.shift-inner {
+  max-width: 1200px;
+}
+
+.shift-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.slide-shift h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 22ch;
+  margin-bottom: 64px;
+}
+
+.slide-shift h2 em { font-style: italic; color: var(--teal); }
+
+.shift-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 48px;
+  align-items: center;
+  max-width: 1100px;
+}
+
+@media (max-width: 800px) {
+  .shift-grid { grid-template-columns: 1fr; gap: 28px; }
+  .shift-grid .arrow { transform: rotate(90deg); justify-self: center; }
+}
+
+.shift-col {
+  padding: 40px 32px;
+  border-radius: 20px;
+}
+
+.shift-col.old {
+  background: rgba(184, 86, 80, 0.08);
+  border: 1px solid rgba(184, 86, 80, 0.2);
+}
+
+.shift-col.new {
+  background: rgba(19, 71, 61, 0.06);
+  border: 1px solid rgba(19, 71, 61, 0.2);
+}
+
+.shift-col-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.shift-col.old .shift-col-label { color: var(--red-soft); }
+.shift-col.new .shift-col-label { color: var(--teal); }
+
+.shift-col h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(24px, 2.4vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.shift-col h3 em { font-style: italic; color: var(--teal); }
+
+.shift-col p {
+  font-size: 15px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+
+.shift-arrow {
+  font-family: var(--serif);
+  font-size: 48px;
+  color: var(--amber);
+  font-weight: 300;
+}
+
+/* ============= SLIDE 5 — SYSTEM ============= */
+
+.slide-system {
+  background: var(--bg-deep);
+  color: var(--bg);
+}
+
+.system-inner { max-width: 1200px; }
+
+.slide-system .shift-eyebrow { color: var(--amber-soft); }
+
+.slide-system h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 22ch;
+  margin-bottom: 56px;
+  color: var(--bg);
+}
+
+.slide-system h2 em { font-style: italic; color: var(--amber-soft); }
+
+.layers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .layers { grid-template-columns: 1fr; }
+}
+
+.layer {
+  padding: 32px 28px;
+  background: rgba(250, 245, 236, 0.06);
+  border: 1px solid rgba(250, 245, 236, 0.12);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.layer-num {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--amber-soft);
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.layer h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--bg);
+  margin-bottom: 14px;
+}
+
+.layer-desc {
+  font-size: 14.5px;
+  color: rgba(250, 245, 236, 0.75);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.layer-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.layer-ex {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(250, 245, 236, 0.65);
+  padding: 5px 10px;
+  background: rgba(250, 245, 236, 0.08);
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+}
+
+/* ============= SLIDE 6 — BUILT ============= */
+
+.slide-built {
+  background: var(--bg);
+}
+
+.slide-built h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(34px, 4.5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 22ch;
+  margin-bottom: 14px;
+}
+
+.slide-built h2 em { font-style: italic; color: var(--teal); }
+
+.built-sub {
+  font-size: clamp(16px, 1.4vw, 19px);
+  color: var(--ink-muted);
+  margin-bottom: 56px;
+  max-width: 58ch;
+}
+
+.built-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  background: var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 1300px;
+}
+
+@media (max-width: 1000px) {
+  .built-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .built-grid { grid-template-columns: 1fr; }
+}
+
+.built {
+  background: var(--bg-warm);
+  padding: 28px 26px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.built-num {
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--amber);
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+
+.built h4 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(19px, 1.8vw, 24px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.built p {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+
+.built-tag {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal);
+  font-weight: 600;
+  padding: 4px 10px;
+  background: rgba(19, 71, 61, 0.08);
+  border-radius: 100px;
+  align-self: flex-start;
+}
+
+/* ============= SLIDE 7 — BEFORE/AFTER ============= */
+
+.slide-ba {
+  background: var(--bg);
+}
+
+.slide-ba .shift-eyebrow { margin-bottom: 18px; }
+
+.slide-ba h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+  margin-bottom: 44px;
+}
+
+.slide-ba h2 em { font-style: italic; color: var(--teal); }
+
+.ba-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1200px;
+}
+
+@media (max-width: 900px) {
+  .ba-grid { grid-template-columns: 1fr; }
+}
+
+.ba-col {
+  padding: 32px 30px;
+  border-radius: 20px;
+}
+
+.ba-col.old {
+  background: rgba(184, 86, 80, 0.06);
+  border: 1px solid rgba(184, 86, 80, 0.2);
+}
+
+.ba-col.new {
+  background: rgba(19, 71, 61, 0.05);
+  border: 1px solid rgba(19, 71, 61, 0.2);
+}
+
+.ba-col-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.ba-col.old .ba-col-label { color: var(--red-soft); }
+.ba-col.new .ba-col-label { color: var(--teal); }
+
+.ba-col p {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.4vw, 17.5px);
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.ba-col p:last-child { margin-bottom: 0; }
+
+.ba-col p em {
+  color: var(--teal);
+  font-style: italic;
+}
+
+/* ============= SLIDE 8 — CLOSE ============= */
+
+.slide-close {
+  background: var(--bg-ink);
+  color: var(--bg);
+  padding: 7vh 7vw;
+}
+
+.close-inner { max-width: 1100px; }
+
+.close-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--amber-soft);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 32px;
+}
+
+.slide-close h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--bg);
+  max-width: 22ch;
+  margin-bottom: 40px;
+}
+
+.slide-close h2 em {
+  font-style: italic;
+  color: var(--amber-soft);
+}
+
+.slide-close .close-p {
+  font-family: var(--serif);
+  font-size: clamp(19px, 2vw, 26px);
+  line-height: 1.45;
+  color: rgba(250, 245, 236, 0.75);
+  max-width: 48ch;
+  margin-bottom: 56px;
+  letter-spacing: -0.005em;
+}
+
+.close-cta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(250, 245, 236, 0.15);
+}
+
+@media (max-width: 800px) {
+  .close-cta { grid-template-columns: 1fr; }
+}
+
+.cta-col .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-soft);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.cta-col .v {
+  font-family: var(--serif);
+  font-size: clamp(17px, 1.6vw, 21px);
+  line-height: 1.4;
+  color: var(--bg);
+  letter-spacing: -0.01em;
+}
+
+/* ============= NAVIGATION ============= */
+
+.dots {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 50;
+  padding: 10px 14px;
+  background: rgba(18, 18, 18, 0.08);
+  border-radius: 100px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dots.on-dark {
+  background: rgba(250, 245, 236, 0.1);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(18, 18, 18, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.dots.on-dark .dot {
+  background: rgba(250, 245, 236, 0.3);
+}
+
+.dot.active {
+  background: var(--amber);
+  width: 28px;
+  border-radius: 100px;
+}
+
+.counter {
+  position: fixed;
+  bottom: 34px;
+  right: 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  z-index: 50;
+  font-weight: 500;
+}
+
+.counter.on-dark { color: rgba(250, 245, 236, 0.6); }
+
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(18, 18, 18, 0.08);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  z-index: 50;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+.nav-arrow:hover { background: rgba(18, 18, 18, 0.15); }
+
+.nav-arrow.left { left: 24px; }
+.nav-arrow.right { right: 24px; }
+
+.nav-arrow.on-dark {
+  background: rgba(250, 245, 236, 0.1);
+  color: var(--bg);
+}
+
+.nav-arrow.on-dark:hover { background: rgba(250, 245, 236, 0.2); }
+
+.nav-arrow svg { width: 18px; height: 18px; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ============= SLIDE 1 — COVER ============= -->
+  <div class="slide slide-cover active" data-theme="light">
+    <span class="slide-num">01 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="cover-inner">
+      <div class="cover-eyebrow">A proposal for Fly91</div>
+      <h1>The airline that<br><em>explains everything.</em></h1>
+      <div class="cover-sub">A Passenger Confidence System — built around one rule: transparency beats reassurance, always.</div>
+      <div class="cover-meta">
+        <span>Comms · Content · Support · Recovery</span>
+        <span>April 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 2 — HOOK ============= -->
+  <div class="slide slide-hook dark" data-theme="dark">
+    <span class="slide-num">02 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="hook-eyebrow">April 20, 2026</div>
+    <div class="hook-date">Flight IC 3401 · Hyderabad → Hubballi</div>
+    <h2>22 passengers held in the air for <em>three and a half hours,</em> with nothing said in the cabin they could hold on to.</h2>
+    <div class="hook-numbers">
+      <div class="hook-num">
+        <span class="n">70<span style="font-size:0.5em; color: rgba(250,245,236,0.5);">m</span></span>
+        <span class="l">Held above Hubballi</span>
+      </div>
+      <div class="hook-num">
+        <span class="n">2</span>
+        <span class="l">Diversions · BLR then back</span>
+      </div>
+      <div class="hook-num">
+        <span class="n">24h+</span>
+        <span class="l">To Fly91's response</span>
+      </div>
+      <div class="hook-num">
+        <span class="n">0</span>
+        <span class="l">Times "sorry" appeared</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 3 — DIAGNOSIS ============= -->
+  <div class="slide slide-diag" data-theme="light">
+    <span class="slide-num">03 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="diag-grid">
+      <div>
+        <div class="diag-quote">
+          "The claims are incorrect and malicious. We urge responsible reporting. The diversion was standard operating procedure. Impeccable safety record. Zero compromise on safety."
+          <span class="attrib">Fly91 public statement · April 20</span>
+        </div>
+        <div class="diag-quote" style="border-left-color: var(--teal); background: rgba(19, 71, 61, 0.06); font-style: normal; color: var(--teal); font-weight: 500;">
+          Zero mention of the passengers.<br>Zero acknowledgement that it was frightening.<br>Zero promise of what changes.
+        </div>
+      </div>
+      <div>
+        <div class="diag-right-eyebrow">The diagnosis</div>
+        <h2>This wasn't a <em>safety failure.</em></h2>
+        <h2 style="margin-top: -12px;">It was a <em>communication failure.</em></h2>
+        <p>The aircraft was fine. The crew was competent. The decision to hold and divert was the right one. <strong>What broke was the conversation</strong> — in the cabin during the flight, in the press release after, and on Twitter through the night.</p>
+        <p style="margin-top: 16px;"><strong>This is the problem Fly91 can actually fix. Starting now.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 4 — THE SHIFT ============= -->
+  <div class="slide slide-shift" data-theme="light">
+    <span class="slide-num">04 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="shift-inner">
+      <div class="shift-eyebrow">The one rule that changes everything</div>
+      <h2>Transparency, <em>not</em> reassurance.</h2>
+      <div class="shift-grid">
+        <div class="shift-col old">
+          <div class="shift-col-label">Most airlines</div>
+          <h3>"Don't worry. Everything is safe."</h3>
+          <p>Reassurance spoken at the passenger. Abstract. Defensive. Invites the question: what are you hiding?</p>
+        </div>
+        <div class="shift-arrow">→</div>
+        <div class="shift-col new">
+          <div class="shift-col-label">Fly91</div>
+          <h3>"Here's exactly <em>what's happening.</em>"</h3>
+          <p>Explanation spoken to the passenger. Specific. Honest. Removes fear by removing the unknown.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 5 — SYSTEM ============= -->
+  <div class="slide slide-system dark" data-theme="dark">
+    <span class="slide-num">05 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="system-inner">
+      <div class="shift-eyebrow">The system, three layers deep</div>
+      <h2>The <em>Passenger Confidence System.</em></h2>
+      <div class="layers">
+        <div class="layer">
+          <div class="layer-num">Layer 01</div>
+          <h3>Demand</h3>
+          <p class="layer-desc">Capture the passengers you don't have yet. Route-specific editorial landing pages that rank for "cheapest flight to Sindhudurg" — and convert searchers to leads.</p>
+          <div class="layer-examples">
+            <span class="layer-ex">SEO route pages</span>
+            <span class="layer-ex">Lead capture</span>
+            <span class="layer-ex">WhatsApp alerts</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num">Layer 02</div>
+          <h3>Trust</h3>
+          <p class="layer-desc">Fly91 becomes the airline that explains everything. "Flying, Explained" content that teaches, not reassures — so no one who boards is surprised.</p>
+          <div class="layer-examples">
+            <span class="layer-ex">Weekly videos</span>
+            <span class="layer-ex">ATR explainers</span>
+            <span class="layer-ex">Testimonials</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num">Layer 03</div>
+          <h3>Support</h3>
+          <p class="layer-desc">Telentir voice AI calls passengers — before, during delays, after. No hold queues, no "as per policy." Just a voice that tells you what's true.</p>
+          <div class="layer-examples">
+            <span class="layer-ex">Pre-flight calls</span>
+            <span class="layer-ex">Delay calls</span>
+            <span class="layer-ex">Recovery calls</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 6 — WHAT WE BUILT ============= -->
+  <div class="slide slide-built" data-theme="light">
+    <span class="slide-num">06 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="shift-eyebrow" style="margin-bottom: 20px;">What's in this package</div>
+    <h2>Five deliverables. <em>Already built.</em></h2>
+    <p class="built-sub">Not a plan to build. Click any one of these links and you'll see the actual artifact. This is what a finished Fly91 looks like today.</p>
+    <div class="built-grid">
+      <div class="built">
+        <div class="built-num">01</div>
+        <h4>A new Fly91 homepage</h4>
+        <p>Design-forward, warm, editorial. Includes a live BLR→SDW route page with lead capture.</p>
+        <span class="built-tag">Webpage</span>
+      </div>
+      <div class="built">
+        <div class="built-num">02</div>
+        <h4>"Why your plane circled"</h4>
+        <p>45-second video explainer. The opening shot of a weekly "Flying, Explained" series.</p>
+        <span class="built-tag">Video + audio</span>
+      </div>
+      <div class="built">
+        <div class="built-num">03</div>
+        <h4>Telentir voice demo</h4>
+        <p>A real recording of the ground-delay reassurance call. Three scripts total.</p>
+        <span class="built-tag">Audio · 3 scripts</span>
+      </div>
+      <div class="built">
+        <div class="built-num">04</div>
+        <h4>PR strategy package</h4>
+        <p>Hubballi rewrite, 5 voice rules, 90-min protocol, "Flying, Explained" campaign, recovery plan.</p>
+        <span class="built-tag">10-section doc</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 7 — BEFORE/AFTER ============= -->
+  <div class="slide slide-ba" data-theme="light">
+    <span class="slide-num">07 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="shift-eyebrow">Hubballi, rewritten</div>
+    <h2>Same facts. <em>A different airline altogether.</em></h2>
+    <div class="ba-grid">
+      <div class="ba-col old">
+        <div class="ba-col-label">What Fly91 said · April 20</div>
+        <p>"The claims being circulated about Flight IC 3401 are incorrect and malicious."</p>
+        <p>"The diversion was a standard operating procedure due to adverse weather. Our crew is highly trained and our safety record is impeccable."</p>
+        <p>"We urge responsible reporting of facts."</p>
+      </div>
+      <div class="ba-col new">
+        <div class="ba-col-label">What Fly91 should have said</div>
+        <p>"Yesterday, our flight took three and a half hours instead of one. That was a <em>frightening afternoon</em> for the 22 people on board. We're sorry."</p>
+        <p>"Where we failed you was in the cabin. <em>We didn't tell you enough, often enough, in language that sounded human.</em> That is on us."</p>
+        <p>"From next week: flight-deck updates every 10 minutes, and a call from our team to every passenger within an hour of landing. Manoj Chacko, CEO."</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SLIDE 8 — CLOSE ============= -->
+  <div class="slide slide-close dark" data-theme="dark">
+    <span class="slide-num">08 / 08</span>
+    <span class="slide-logo">fly<sup>91</sup></span>
+    <div class="close-inner">
+      <div class="close-eyebrow">What happens next</div>
+      <h2>Hubballi wasn't a flight that went wrong. <em>It was a conversation that never happened.</em></h2>
+      <p class="close-p">Fix the conversation, and Fly91 stops being the airline that defended its procedure. Starts being the airline that explained everything.</p>
+      <div class="close-cta">
+        <div class="cta-col">
+          <div class="label">Step 01</div>
+          <div class="v">30-minute call. We walk through the micro-site, the video, and the voice demo, live.</div>
+        </div>
+        <div class="cta-col">
+          <div class="label">Step 02</div>
+          <div class="v">Plug Telentir in properly. Integrate voice support on your real stack.</div>
+        </div>
+        <div class="cta-col">
+          <div class="label">Step 03</div>
+          <div class="v">Launch "Flying, Explained." First video in the calendar: next Monday.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<button class="nav-arrow left" id="prevBtn" aria-label="Previous">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+</button>
+<button class="nav-arrow right" id="nextBtn" aria-label="Next">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+</button>
+
+<div class="dots" id="dots"></div>
+<div class="counter" id="counter">01 / 08</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Slide ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(index) {
+    if (index < 0 || index >= totalSlides) return;
+    slides[currentSlide].classList.remove('active');
+    slides[index].classList.add('active');
+    currentSlide = index;
+
+    // Update dots
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+
+    // Update counter
+    counter.textContent = String(index + 1).padStart(2, '0') + ' / ' + String(totalSlides).padStart(2, '0');
+
+    // Theme-aware controls
+    const theme = slides[index].dataset.theme;
+    if (theme === 'dark') {
+      dotsContainer.classList.add('on-dark');
+      counter.classList.add('on-dark');
+      prevBtn.classList.add('on-dark');
+      nextBtn.classList.add('on-dark');
+    } else {
+      dotsContainer.classList.remove('on-dark');
+      counter.classList.remove('on-dark');
+      prevBtn.classList.remove('on-dark');
+      nextBtn.classList.remove('on-dark');
+    }
+  }
+
+  function next() { goTo(Math.min(currentSlide + 1, totalSlides - 1)); }
+  function prev() { goTo(Math.max(currentSlide - 1, 0)); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Escape') {
+      window.parent.postMessage({ type: 'close-fullscreen' }, '*');
+    }
+  });
+
+  // Parent message listener
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'navigate') {
+      if (e.data.direction === 'next') next();
+      if (e.data.direction === 'prev') prev();
+    }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) {
+      if (dx > 0) prev(); else next();
+    }
+  });
+
+  // Initial theme
+  goTo(0);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "fly91-brand-response",
+  "version": "1.0.0",
+  "description": "A brand response and communication package for Fly91 — India's regional airline. Built as a MERN application: React frontend, Express API, MongoDB persistence, deployed on Vercel.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "node api/server.js",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0",
+    "express": "^4.21.1",
+    "mongoose": "^8.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Mohammed Thameem <mohammed.thameem@kalvium.community>",
+  "license": "MIT"
+}

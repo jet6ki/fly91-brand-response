@@ -1,14 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true,
-  "trailingSlash": false,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/((?!api|media|assets).*)", "destination": "/index.html" }
+  ],
   "headers": [
-    {
-      "source": "/(.*)\\.(html|js|css)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" }
-      ]
-    },
     {
       "source": "/media/(.*)",
       "headers": [

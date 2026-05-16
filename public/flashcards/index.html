@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fly91 — Pitch Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal: #06B1BA;
+  --teal-dark: #003847;
+  --teal-mid: #006A8E;
+  --teal-pale: #EFFBFC;
+  --teal-pale-2: #D6F5F8;
+  --yellow: #FAB600;
+  --orange: #FF6D35;
+  --cream: #F4EED7;
+  --ink: #272727;
+  --ink-muted: #555;
+  --ink-soft: #7E7E7E;
+  --bg-stage: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal-mid) 100%);
+  --font: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-stage);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(250, 182, 0, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(6, 177, 186, 0.15) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.deck {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 3/4;
+  max-height: 80vh;
+  z-index: 2;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  background: white;
+  border-radius: 24px;
+  padding: 48px 44px;
+  box-shadow: 0 30px 60px rgba(0, 56, 71, 0.3), 0 10px 30px rgba(0, 56, 71, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: all 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.card.active {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.card.out-left {
+  transform: translateX(-120%) rotate(-8deg);
+  opacity: 0;
+}
+
+.card.out-right {
+  transform: translateX(120%) rotate(8deg);
+  opacity: 0;
+}
+
+/* Card layout helpers */
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.card-num {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--ink-soft);
+}
+
+.card-num strong {
+  color: var(--teal);
+  font-weight: 800;
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--teal-dark);
+  background: var(--cream);
+}
+
+.card-tag.orange {
+  color: white;
+  background: var(--orange);
+}
+
+.card-tag.yellow {
+  color: var(--teal-dark);
+  background: var(--yellow);
+}
+
+.card-tag.dark {
+  color: white;
+  background: var(--teal-dark);
+}
+
+.card h1 {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+.card h1 span { color: var(--teal); }
+.card h1 em { color: var(--orange); font-style: italic; font-weight: 700; }
+
+.card h2 {
+  font-size: clamp(22px, 3.4vw, 30px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.card h2 span { color: var(--teal); }
+
+.card p {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  margin-bottom: 12px;
+}
+
+.card p.lede {
+  font-size: 17px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.card-foot {
+  padding-top: 24px;
+  border-top: 1px solid rgba(39, 39, 39, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.card-foot .logo-mini {
+  font-weight: 800;
+  color: var(--teal-dark);
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+
+.card-foot .logo-mini span { color: var(--teal); }
+.card-foot .logo-mini sup { color: var(--yellow); font-size: 9px; position: relative; top: -5px; }
+
+/* Card variants */
+
+.card.dark {
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal-mid) 100%);
+  color: white;
+}
+
+.card.dark h1 { color: white; }
+.card.dark h1 span { color: var(--yellow); }
+.card.dark h1 em { color: var(--orange); }
+.card.dark h2 { color: white; }
+.card.dark h2 span { color: var(--yellow); }
+.card.dark p { color: rgba(255, 255, 255, 0.78); }
+.card.dark p.lede { color: white; }
+.card.dark .card-num { color: rgba(255, 255, 255, 0.5); }
+.card.dark .card-num strong { color: var(--yellow); }
+.card.dark .card-foot { border-top-color: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.6); }
+.card.dark .card-foot .logo-mini { color: white; }
+.card.dark .card-foot .logo-mini span { color: var(--yellow); }
+
+.card.dark::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(250, 182, 0, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Specific card styles */
+
+.big-quote {
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 8px 0 28px;
+  color: var(--ink);
+}
+
+.big-quote span { color: var(--teal); }
+
+.card.dark .big-quote { color: white; }
+.card.dark .big-quote span { color: var(--yellow); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 24px 0 12px;
+}
+
+.stat {
+  padding: 14px 10px;
+  background: var(--teal-pale);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.stat .v {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--teal-dark);
+  letter-spacing: -0.02em;
+  display: block;
+  line-height: 1;
+}
+
+.stat .v small { font-size: 14px; color: var(--teal); }
+
+.stat .l {
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.card.dark .stat {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.card.dark .stat .v {
+  color: var(--yellow);
+}
+
+.card.dark .stat .l {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Signature card */
+
+.sig {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(39, 39, 39, 0.08);
+}
+
+.sig-line {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  letter-spacing: 0.02em;
+}
+
+.sig-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.card.dark .sig { border-top-color: rgba(255, 255, 255, 0.15); }
+.card.dark .sig-line { color: white; }
+.card.dark .sig-sub { color: rgba(255, 255, 255, 0.6); }
+
+/* Deliverable card style */
+
+.deliv-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--teal-pale);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  flex-shrink: 0;
+}
+
+.deliv-icon svg { width: 26px; height: 26px; }
+
+.deliv-meta {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 8px;
+}
+
+.deliv-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+
+.deliv-list li {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  padding: 8px 0;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.4;
+}
+
+.deliv-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--teal);
+  font-weight: 800;
+}
+
+.preview-box {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--teal-pale);
+  border-radius: 12px;
+  border: 1px solid rgba(6, 177, 186, 0.2);
+}
+
+.preview-box .label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 6px;
+}
+
+.preview-box .title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  letter-spacing: -0.005em;
+}
+
+/* ============= CONTROLS ============= */
+
+.controls {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 8px 8px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.counter {
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 56px;
+  text-align: center;
+}
+
+.ctrl-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--teal-dark);
+  transition: all 0.2s;
+}
+
+.ctrl-btn:hover:not(:disabled) {
+  background: var(--yellow);
+  transform: scale(1.05);
+}
+
+.ctrl-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ctrl-btn svg { width: 18px; height: 18px; }
+
+.dots {
+  display: flex;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  padding: 0;
+}
+
+.dot.active {
+  background: var(--yellow);
+  width: 24px;
+  border-radius: 100px;
+}
+
+.dot:hover:not(.active) { background: rgba(255, 255, 255, 0.5); }
+
+@media (max-width: 500px) {
+  .card { padding: 36px 28px; }
+  .controls { bottom: 16px; }
+  .dots { display: none; }
+}
+
+/* Subtle peek of next card behind */
+
+.card.next {
+  display: block;
+  visibility: visible;
+  opacity: 0.12;
+  transform: scale(0.94) translateY(16px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.card.active { z-index: 2; }
+
+/* Top hint */
+
+.hint {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint svg { width: 13px; height: 13px; opacity: 0.7; }
+
+@media (max-width: 500px) {
+  .hint { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="hint">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  Swipe or use arrow keys
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+</div>
+
+<div class="stage">
+  <div class="deck" id="deck">
+
+    <!-- CARD 1 — THE OPENING -->
+    <div class="card active" data-idx="0">
+      <div class="card-head">
+        <span class="card-num"><strong>01</strong> / 08 · Who I am</span>
+        <span class="card-tag">The opening</span>
+      </div>
+
+      <div>
+        <h1>A proposal for <span>Fly91.</span></h1>
+        <p class="lede" style="margin-top: 12px;">From one nervous flyer who saw the Hubballi news and spent a weekend on something that might help.</p>
+        <p style="margin-top: 24px;">I'm a college student, not a consultant. I work with a small team on <strong style="color: var(--teal-dark);">Telentir</strong> — an AI voice-support system. This is a hand-built package. No agenda.</p>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>Pitch cards · Apr 2026</span>
+      </div>
+    </div>
+
+    <!-- CARD 2 — THE DIAGNOSIS -->
+    <div class="card" data-idx="1">
+      <div class="card-head">
+        <span class="card-num"><strong>02</strong> / 08 · Diagnosis</span>
+        <span class="card-tag orange">April 20 · IC 3401</span>
+      </div>
+
+      <div>
+        <h2>Not a safety problem.<br><span>A communication one.</span></h2>
+        <p>Your captain made the right call — held for weather, diverted, got everyone home. The silence in the cabin and the tone of the statement afterwards is what stuck with people.</p>
+
+        <div class="stats">
+          <div class="stat"><span class="v">70<small>m</small></span><span class="l">Held above HBX</span></div>
+          <div class="stat"><span class="v">22</span><span class="l">Passengers</span></div>
+          <div class="stat"><span class="v">0</span><span class="l">"Sorry" said</span></div>
+        </div>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>02 of 08</span>
+      </div>
+    </div>
+
+    <!-- CARD 3 — THE RULE -->
+    <div class="card dark" data-idx="2">
+      <div class="card-head">
+        <span class="card-num"><strong>03</strong> / 08 · The rule</span>
+        <span class="card-tag yellow">One idea</span>
+      </div>
+
+      <div>
+        <p class="lede" style="color: rgba(255, 255, 255, 0.7); margin-bottom: 6px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800;">The governing rule</p>
+        <p class="big-quote">Transparency <span>beats</span> reassurance.</p>
+        <p>Most airlines say "don't worry, everything is safe." Fly91 could say "here's exactly what's happening." One removes fear by removing information. The other removes fear by removing the unknown.</p>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>Acknowledge · Explain · Act</span>
+      </div>
+    </div>
+
+    <!-- CARD 4 — DELIVERABLE 1: SITE -->
+    <div class="card" data-idx="3">
+      <div class="card-head">
+        <span class="card-num"><strong>04</strong> / 08 · Built it #1</span>
+        <span class="card-tag">Webpage</span>
+      </div>
+
+      <div>
+        <div class="deliv-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><circle cx="6" cy="6.5" r="0.5" fill="currentColor"/></svg>
+        </div>
+        <div class="deliv-meta">Deliverable 01</div>
+        <h2>A homepage <span>reskin.</span></h2>
+        <p>Your existing palette. Your booking-widget-first structure. Modernized components, live flight tracker, Telentir support surface, testimonials, subtle first-time-flyer helper.</p>
+
+        <ul class="deliv-list">
+          <li>Teal + yellow + deep teal (from your CSS)</li>
+          <li>Working booking search</li>
+          <li>Live flight tracker with animated flights</li>
+          <li>Routes + "Why Fly91" + newsroom</li>
+        </ul>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>View linked below</span>
+      </div>
+    </div>
+
+    <!-- CARD 5 — DELIVERABLE 2: VIDEO -->
+    <div class="card" data-idx="4">
+      <div class="card-head">
+        <span class="card-num"><strong>05</strong> / 08 · Built it #2</span>
+        <span class="card-tag">Video · 45s</span>
+      </div>
+
+      <div>
+        <div class="deliv-icon" style="background: rgba(255, 109, 53, 0.12); color: var(--orange);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div class="deliv-meta">Deliverable 02</div>
+        <h2>"Why your plane <span>circled."</span></h2>
+        <p>A short explainer, AI-generated, in the tone I think lands. The first drop of what could be a "Flying, Explained" series — a content commitment bigger airlines won't make because it's too close to admitting weakness. Fly91 can own it.</p>
+
+        <div class="preview-box">
+          <div class="label">Sample line</div>
+          <div class="title">"Circling isn't an emergency. It's the opposite. It's a decision not to land until it's right."</div>
+        </div>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>Audio + two clips</span>
+      </div>
+    </div>
+
+    <!-- CARD 6 — DELIVERABLE 3: TELENTIR -->
+    <div class="card" data-idx="5">
+      <div class="card-head">
+        <span class="card-num"><strong>06</strong> / 08 · Built it #3</span>
+        <span class="card-tag dark">Voice demo</span>
+      </div>
+
+      <div>
+        <div class="deliv-icon" style="background: var(--teal-dark); color: var(--yellow);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div class="deliv-meta">Deliverable 03</div>
+        <h2>A Telentir <span>reassurance call.</span></h2>
+        <p>Ground-delay scenario, recorded. It's the tone I wish IC 3401 had heard. Plus two supporting scripts (pre-flight first-time-flyer + post-flight trust rebuild).</p>
+
+        <div class="preview-box" style="background: var(--teal-dark); border-color: var(--teal-mid);">
+          <div class="label" style="color: var(--yellow);">Sample · First 10 seconds</div>
+          <div class="title" style="color: white;">"Hi, this is Sana from Fly91. First — I know a delay is the last thing you want to hear. I'm sorry we're making you wait."</div>
+        </div>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>3 call scripts · 1 audio</span>
+      </div>
+    </div>
+
+    <!-- CARD 7 — DELIVERABLE 4: PR -->
+    <div class="card" data-idx="6">
+      <div class="card-head">
+        <span class="card-num"><strong>07</strong> / 08 · Built it #4</span>
+        <span class="card-tag">PR doc</span>
+      </div>
+
+      <div>
+        <div class="deliv-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="deliv-meta">Deliverable 04</div>
+        <h2>A PR package —<br><span>with the rewrite.</span></h2>
+        <p>The Hubballi statement rewritten in your voice, side-by-side with the original and annotated. Plus a short playbook: tone rules, a 90-minute incident protocol, and a customer recovery plan for the vocal complainers.</p>
+
+        <ul class="deliv-list">
+          <li>Hubballi statement rewritten — CEO-signed</li>
+          <li>5 voice rules (acknowledge · explain · act)</li>
+          <li>90-minute incident response protocol</li>
+          <li>"Flying, Explained" campaign breakdown</li>
+          <li>Customer recovery for unhappy flyers</li>
+        </ul>
+      </div>
+
+      <div class="card-foot">
+        <span class="logo-mini">fly<span>91</span><sup>●</sup></span>
+        <span>10 sections · ~8-min read</span>
+      </div>
+    </div>
+
+    <!-- CARD 8 — THE CLOSE -->
+    <div class="card dark" data-idx="7">
+      <div class="card-head">
+        <span class="card-num"><strong>08</strong> / 08 · No agenda</span>
+        <span class="card-tag yellow">The end</span>
+      </div>
+
+      <div>
+        <h1>If it's useful,<br><span>amazing.</span></h1>
+        <p class="lede" style="color: rgba(255, 255, 255, 0.88); margin-top: 20px;">If not — no worries. I just wanted to make sure it got seen.</p>
+        <p style="margin-top: 20px;">I'm not trying to tell you how to run your airline. I just saw Hubballi as a nervous flyer and thought: the distance between what happened in that cabin and what could have happened is small. And that distance is buildable.</p>
+      </div>
+
+      <div class="sig">
+        <div class="sig-line">— A college student, India · April 2026</div>
+        <div class="sig-sub">Reach via LinkedIn · No reply needed</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl-btn" id="prevBtn" aria-label="Previous">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <div class="dots" id="dots"></div>
+  <span class="counter" id="counter">01 / 08</span>
+  <button class="ctrl-btn" id="nextBtn" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+
+<script>
+  const cards = document.querySelectorAll('.card');
+  const total = cards.length;
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  const dotsContainer = document.getElementById('dots');
+  let current = 0;
+
+  // Build dots
+  cards.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => go(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function go(target) {
+    if (target < 0 || target >= total || target === current) return;
+    const direction = target > current ? 'next' : 'prev';
+
+    cards[current].classList.remove('active', 'next');
+    cards[current].classList.add(direction === 'next' ? 'out-left' : 'out-right');
+
+    cards[target].classList.remove('out-left', 'out-right', 'next');
+    cards[target].classList.add('active');
+
+    current = target;
+    updateUI();
+
+    // Clean up old card classes after animation
+    setTimeout(() => {
+      cards.forEach((c, i) => {
+        if (i !== current) c.classList.remove('out-left', 'out-right');
+      });
+    }, 600);
+  }
+
+  function next() { go(Math.min(current + 1, total - 1)); }
+  function prev() { go(Math.max(current - 1, 0)); }
+
+  function updateUI() {
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Escape') { window.parent.postMessage({ type: 'close-fullscreen' }, '*'); }
+  });
+
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'navigate') {
+      if (e.data.direction === 'next') next();
+      if (e.data.direction === 'prev') prev();
+    }
+  });
+
+  // Touch swipe
+  let startX = 0;
+  document.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) {
+      if (dx > 0) prev(); else next();
+    }
+  });
+
+  updateUI();
+</script>
+
+</body>
+</html>
